@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using YoutubeDown.Library.ffmpeg;
 using YoutubeExplode.Models;
+using YoutubeExplode.Models.MediaStreams;
 
 namespace YoutubeDown.Library
 {
@@ -50,15 +51,29 @@ namespace YoutubeDown.Library
 
             var videoInfo = await client.GetVideoInfoAsync(videoId);
 
-            // get adaptive audiostream with highest bitrate
-            var audioStreamInfo = videoInfo.AudioStreams
-                .OrderBy(x => x.Bitrate)
-                .Last();
-
-            // get adaptive videostream with best videoquality and same container as audiostream
+            // get adaptive videostream with best videoquality
             var videoStreamInfo = videoInfo.VideoStreams
                 .OrderBy(x => x.VideoQuality)
-                .Last(x => x.Container == audioStreamInfo.Container);
+                .ThenBy(x => x.Bitrate)
+                .LastOrDefault();
+
+            AudioStreamInfo audioStreamInfo = null;
+
+            // get adaptive audiostream with highest bitrate
+            if (videoStreamInfo.Container == Container.WebM)
+            {
+                audioStreamInfo = videoInfo.AudioStreams
+                    .Where(x => x.AudioEncoding == AudioEncoding.Vorbis || x.AudioEncoding == AudioEncoding.Opus)
+                    .OrderBy(x => x.Bitrate)
+                    .LastOrDefault();
+            }
+            else 
+            {
+                audioStreamInfo = videoInfo.AudioStreams
+                    .Where(x => x.AudioEncoding == AudioEncoding.Aac)
+                    .OrderBy(x => x.Bitrate)
+                    .LastOrDefault();
+            }
 
             // temporary filenames for downloading adaptive files
             var tmpAudioFileName = Path.Combine(DownloadPath, $"{videoInfo.Title}__audio".GetValidFileName());
