@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -67,7 +68,7 @@ namespace YoutubeDown.Library
                     .OrderBy(x => x.Bitrate)
                     .LastOrDefault();
             }
-            else 
+            else
             {
                 audioStreamInfo = videoInfo.AudioStreams
                     .Where(x => x.AudioEncoding == AudioEncoding.Aac)
@@ -113,9 +114,12 @@ namespace YoutubeDown.Library
 
                 // muxing videofile with audiofile
                 MuxingStarted?.Invoke(this, EventArgs.Empty);
-                Muxer.FFmpegPath = FFmpegPath;
-                Muxer.OverwriteFiles = OverwriteFiles;
-                Muxer.Mux(tmpVideoFileName, tmpAudioFileName, fileName, LogLevel.error);
+                using (var muxer = new Muxer(OverwriteFiles, FFmpegPath))
+                {
+                    // TODO: Log
+                    muxer.DataReceived += (s, e) => { Debug.WriteLine(e.Data?.ToString()); };
+                    muxer.Mux(tmpVideoFileName, tmpAudioFileName, fileName, LogLevel.error);
+                }
                 MuxingFinished?.Invoke(this, EventArgs.Empty);
             }
             finally

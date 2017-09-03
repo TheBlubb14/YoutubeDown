@@ -4,55 +4,51 @@ using System.IO;
 
 namespace YoutubeDown.Library.ffmpeg
 {
-    public static class Muxer
+    public class Muxer : IDisposable
     {
-        public static bool OverwriteFiles { get; set; }
-        public static string FFmpegPath { get; set; }
+        public bool OverwriteFiles { get; set; }
+        public string FFmpegPath { get; set; }
 
-        private static Process ffmpegProcess = null;
+        public event EventHandler<DataReceivedEventArgs> DataReceived;
 
-        public static void Mux(string videoFile, string audioFile, string destinationFile, LogLevel logLevel)
+        private Process ffmpegProcess = null;
+
+        public Muxer(bool overwriteFiles, string ffmpegPath)
         {
-            try
-            {
-                var overwriteArgument = OverwriteFiles ? "-y" : "-n";
-                var processStartInfo = new ProcessStartInfo(FFmpegPath, $"-v {logLevel} {overwriteArgument} -i \"{videoFile}\" -i \"{audioFile}\"  -c copy \"{destinationFile}\"")
-                {
-                    CreateNoWindow = true,
-                    RedirectStandardError = true,
-                    RedirectStandardOutput = true,
-                    UseShellExecute = false
-                };
-
-                ffmpegProcess = new Process
-                {
-                    StartInfo = processStartInfo,
-                    EnableRaisingEvents = true
-                };
-
-                ffmpegProcess.ErrorDataReceived += FfmpegProcess_DataReceived;
-                ffmpegProcess.OutputDataReceived += FfmpegProcess_DataReceived;
-
-                ffmpegProcess.Start();
-                ffmpegProcess.BeginErrorReadLine();
-                ffmpegProcess.BeginOutputReadLine();
-
-                ffmpegProcess.WaitForExit();
-            }
-            catch (Exception ex)
-            {
-                ffmpegProcess?.Dispose();
-                throw ex;
-            }
+            OverwriteFiles = overwriteFiles;
+            FFmpegPath = ffmpegPath;
         }
 
-        private static void FfmpegProcess_DataReceived(object sender, DataReceivedEventArgs e)
+        public void Mux(string videoFile, string audioFile, string destinationFile, LogLevel logLevel)
         {
-            if (e.Data != null)
+            var overwriteArgument = OverwriteFiles ? "-y" : "-n";
+            var processStartInfo = new ProcessStartInfo(FFmpegPath, $"-v {logLevel} {overwriteArgument} -i \"{videoFile}\" -i \"{audioFile}\"  -c copy \"{destinationFile}\"")
             {
-                ffmpegProcess?.Dispose();
-                throw new Exception(e.Data);
-            }
+                CreateNoWindow = true,
+                RedirectStandardError = true,
+                RedirectStandardOutput = true,
+                UseShellExecute = false
+            };
+
+            ffmpegProcess = new Process
+            {
+                StartInfo = processStartInfo,
+                EnableRaisingEvents = true
+            };
+
+            ffmpegProcess.ErrorDataReceived += (s, e) => { DataReceived?.Invoke(s, e); };
+            ffmpegProcess.OutputDataReceived += (s, e) => { DataReceived?.Invoke(s, e); };
+
+            ffmpegProcess.Start();
+            ffmpegProcess.BeginErrorReadLine();
+            ffmpegProcess.BeginOutputReadLine();
+
+            ffmpegProcess.WaitForExit();
+        }
+
+        public void Dispose()
+        {
+            ffmpegProcess?.Dispose();
         }
     }
 }
