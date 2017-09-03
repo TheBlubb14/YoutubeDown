@@ -1,15 +1,15 @@
 # YoutubeDown
 
-Do u want to download high quality Youtube videos, but every downloader stops at 720p?
+Do you want to download high quality Youtube Videos, but every Downloader stops at 720p?
 
 The solution is YoutubeDown
 
-At the moment you can just download Youtube videos with the highest avaible quality 
+At the moment you can just download Youtube Yideos with the highest avaible quality 
 
-You need ffmpeg on your computer which u can download from https://www.ffmpeg.org/download.html
+You need ffmpeg on your Computer which u can download from https://www.ffmpeg.org/download.html
 
 ### Todo
-- selectable video quality
-- make a console version
-- download hole playlists
-- add a pretty wpf application
+- Selectable Videoquality
+- Make a Console version
+- Download hole Playlists
+- Add a pretty WPF Application
