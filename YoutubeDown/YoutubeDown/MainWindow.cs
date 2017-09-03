@@ -102,6 +102,9 @@ namespace YoutubeDown
 
             var progress = new Progress<double>(x =>
             {
+                if (this.IsDisposed)
+                    return;
+
                 toolStripProgressBar.Value = (int)x;
                 toolStripStatusLabel.Text = $"downloading {x.ToString("00.00")}%";
             });
