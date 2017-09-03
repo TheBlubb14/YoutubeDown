@@ -173,7 +173,11 @@ namespace YoutubeDown
 
         private void YoutubeClient_VideoDownloadInfo(object sender, VideoDownloadInfoArgs e)
         {
-            this.Invoke(() => labelVideoTitelValue.Text = e.Titel);
+            this.Invoke(() =>
+            {
+                toolTipTitle.SetToolTip(labelVideoTitelValue, e.Titel);
+                labelVideoTitelValue.Text = e.Titel;
+            });
             this.Invoke(() => labelAudioSizeValue.Text = e.AudioSize.SizeLabel);
             this.Invoke(() => labelVideoSizeValue.Text = e.VideoSize.SizeLabel);
             this.Invoke(() => labelTotalSizeValue.Text = e.TotalSize.SizeLabel);

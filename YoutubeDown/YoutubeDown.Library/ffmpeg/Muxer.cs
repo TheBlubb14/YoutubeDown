@@ -44,11 +44,6 @@ namespace YoutubeDown.Library.ffmpeg
                 ffmpegProcess?.Dispose();
                 throw ex;
             }
-            finally
-            {
-                File.Delete(audioFile);
-                File.Delete(videoFile);
-            }
         }
 
         private static void FfmpegProcess_DataReceived(object sender, DataReceivedEventArgs e)

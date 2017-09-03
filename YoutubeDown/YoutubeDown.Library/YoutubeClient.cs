@@ -90,16 +90,26 @@ namespace YoutubeDown.Library
                 Progress?.Report(audioDownloadProgress + videoDownloadProgress);
             });
 
-            // downloading adaptive streams
-            await client.DownloadMediaStreamAsync(audioStreamInfo, tmpAudioFileName, audioProgress, CancellationToken);
-            await client.DownloadMediaStreamAsync(videoStreamInfo, tmpVideoFileName, videoProgress, CancellationToken);
+            try
+            {
+                // downloading adaptive streams
+                await client.DownloadMediaStreamAsync(audioStreamInfo, tmpAudioFileName, audioProgress, CancellationToken);
+                await client.DownloadMediaStreamAsync(videoStreamInfo, tmpVideoFileName, videoProgress, CancellationToken);
 
-            // muxing videofile with audiofile
-            MuxingStarted?.Invoke(this, EventArgs.Empty);
-            Muxer.FFmpegPath = FFmpegPath;
-            Muxer.OverwriteFiles = OverwriteFiles;
-            Muxer.Mux(tmpVideoFileName, tmpAudioFileName, fileName, LogLevel.error);
-            MuxingFinished?.Invoke(this, EventArgs.Empty);
+                // muxing videofile with audiofile
+                MuxingStarted?.Invoke(this, EventArgs.Empty);
+                Muxer.FFmpegPath = FFmpegPath;
+                Muxer.OverwriteFiles = OverwriteFiles;
+                Muxer.Mux(tmpVideoFileName, tmpAudioFileName, fileName, LogLevel.error);
+                MuxingFinished?.Invoke(this, EventArgs.Empty);
+            }
+            finally
+            {
+                if (File.Exists(tmpAudioFileName))
+                    File.Delete(tmpAudioFileName);
+                if (File.Exists(tmpVideoFileName))
+                    File.Delete(tmpVideoFileName);
+            }
         }
     }
 }

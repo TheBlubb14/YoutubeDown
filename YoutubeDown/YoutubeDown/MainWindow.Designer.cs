@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.textBoxVideoId = new System.Windows.Forms.TextBox();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.toolStripProgressBar = new System.Windows.Forms.ToolStripProgressBar();
@@ -44,6 +45,7 @@
             this.labelVideoSize = new System.Windows.Forms.Label();
             this.labelTotalSizeValue = new System.Windows.Forms.Label();
             this.labelTotalSize = new System.Windows.Forms.Label();
+            this.toolTipTitle = new System.Windows.Forms.ToolTip(this.components);
             this.statusStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
             this.SuspendLayout();
@@ -280,6 +282,7 @@
         private System.Windows.Forms.Label labelVideoSize;
         private System.Windows.Forms.Label labelTotalSizeValue;
         private System.Windows.Forms.Label labelTotalSize;
+        private System.Windows.Forms.ToolTip toolTipTitle;
     }
 }
 
