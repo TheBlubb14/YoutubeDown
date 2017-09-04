@@ -46,6 +46,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Downloader\DownloadProgress.cs" />
+    <Compile Include="Downloader\MediaStreamDownloader.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="ffmpeg\LogLevel.cs" />
     <Compile Include="ffmpeg\Muxer.cs" />
