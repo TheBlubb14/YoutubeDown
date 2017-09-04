@@ -95,41 +95,41 @@ namespace YoutubeDown.Library
             var audioWeight = (double)Math.Round((100m / totalFileSize) * audioStreamInfo.ContentLength, 2);
             var videoWeight = (double)Math.Round((100m / totalFileSize) * videoStreamInfo.ContentLength, 2);
 
-            //var audioProgress = new Progress<double>(x =>
-            //{
-            //    audioDownloadProgress = (audioWeight * x);
-            //    Progress?.Report(audioDownloadProgress + videoDownloadProgress);
-            //});
-
-            //var videoProgress = new Progress<double>(x =>
-            //{
-            //    videoDownloadProgress = (videoWeight * x);
-            //    Progress?.Report(audioDownloadProgress + videoDownloadProgress);
-            //});
-
-            var audioProgress = new Progress<DownloadProgress>(x =>
+            var audioProgress = new Progress<double>(x =>
             {
-                audioDownloadProgress = (audioWeight * x.Percentage);
-                Debug.WriteLine("SPEED: " + x.Speed);
+                audioDownloadProgress = (audioWeight * x);
                 Progress?.Report(audioDownloadProgress + videoDownloadProgress);
             });
 
-            var videoProgress = new Progress<DownloadProgress>(x =>
+            var videoProgress = new Progress<double>(x =>
             {
-                videoDownloadProgress = (videoWeight * x.Percentage);
-                Debug.WriteLine("SPEED: " + x.Speed);
+                videoDownloadProgress = (videoWeight * x);
                 Progress?.Report(audioDownloadProgress + videoDownloadProgress);
             });
+
+            //var audioProgress = new Progress<DownloadProgress>(x =>
+            //{
+            //    audioDownloadProgress = (audioWeight * x.Percentage);
+            //    Debug.WriteLine("SPEED: " + x.Speed);
+            //    Progress?.Report(audioDownloadProgress + videoDownloadProgress);
+            //});
+
+            //var videoProgress = new Progress<DownloadProgress>(x =>
+            //{
+            //    videoDownloadProgress = (videoWeight * x.Percentage);
+            //    Debug.WriteLine("SPEED: " + x.Speed);
+            //    Progress?.Report(audioDownloadProgress + videoDownloadProgress);
+            //});
 
             try
             {
-                var downloader = new MediaStreamDownloader();
-                await downloader.DownloadMediaStream(client, audioStreamInfo, tmpAudioFileName, audioProgress, CancellationToken);
-                await downloader.DownloadMediaStream(client, videoStreamInfo, tmpVideoFileName, videoProgress, CancellationToken);
+                //var downloader = new MediaStreamDownloader();
+                //await downloader.DownloadMediaStream(client, audioStreamInfo, tmpAudioFileName, audioProgress, CancellationToken);
+                //await downloader.DownloadMediaStream(client, videoStreamInfo, tmpVideoFileName, videoProgress, CancellationToken);
 
                 // downloading adaptive streams
-                //await client.DownloadMediaStreamAsync(audioStreamInfo, tmpAudioFileName, audioProgress, CancellationToken);
-                //await client.DownloadMediaStreamAsync(videoStreamInfo, tmpVideoFileName, videoProgress, CancellationToken);
+                await client.DownloadMediaStreamAsync(audioStreamInfo, tmpAudioFileName, audioProgress, CancellationToken);
+                await client.DownloadMediaStreamAsync(videoStreamInfo, tmpVideoFileName, videoProgress, CancellationToken);
 
                 // muxing videofile with audiofile
                 MuxingStarted?.Invoke(this, EventArgs.Empty);
