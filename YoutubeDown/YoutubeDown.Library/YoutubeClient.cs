@@ -51,10 +51,10 @@ namespace YoutubeDown.Library
         {
             videoId = videoId.NormalizeYoutubeVideoId();
 
-            var videoInfo = await client.GetVideoInfoAsync(videoId);
-
+            var video = await client.GetVideoAsync(videoId);
+            
             // get adaptive videostream with best videoquality
-            var videoStreamInfo = videoInfo.VideoStreams
+            var videoStreamInfo = video.VideoStreamInfos
                 .OrderBy(x => x.VideoQuality)
                 .ThenBy(x => x.Bitrate)
                 .LastOrDefault();
@@ -64,36 +64,36 @@ namespace YoutubeDown.Library
             // get adaptive audiostream with highest bitrate
             if (videoStreamInfo.Container == Container.WebM)
             {
-                audioStreamInfo = videoInfo.AudioStreams
+                audioStreamInfo = video.AudioStreamInfos
                     .Where(x => x.AudioEncoding == AudioEncoding.Vorbis || x.AudioEncoding == AudioEncoding.Opus)
                     .OrderBy(x => x.Bitrate)
                     .LastOrDefault();
             }
             else
             {
-                audioStreamInfo = videoInfo.AudioStreams
+                audioStreamInfo = video.AudioStreamInfos
                     .Where(x => x.AudioEncoding == AudioEncoding.Aac)
                     .OrderBy(x => x.Bitrate)
                     .LastOrDefault();
             }
 
             // temporary filenames for downloading adaptive files
-            var tmpAudioFileName = Path.Combine(DownloadPath, $"{videoInfo.Title}__audio".GetValidFileName());
-            var tmpVideoFileName = Path.Combine(DownloadPath, $"{videoInfo.Title}__video".GetValidFileName());
+            var tmpAudioFileName = Path.Combine(DownloadPath, $"{video.Title}__audio".GetValidFileName());
+            var tmpVideoFileName = Path.Combine(DownloadPath, $"{video.Title}__video".GetValidFileName());
 
             // get the final filename
             var fileExtension = videoStreamInfo.Container.GetFileExtension();
-            var fileName = Path.Combine(DownloadPath, $"{videoInfo.Title}.{fileExtension}".GetValidFileName());
+            var fileName = Path.Combine(DownloadPath, $"{video.Title}.{fileExtension}".GetValidFileName());
 
-            VideoDownloadInfo?.Invoke(this, new VideoDownloadInfoArgs(videoInfo.Title, fileName, audioStreamInfo.ContentLength, videoStreamInfo.ContentLength));
+            VideoDownloadInfo?.Invoke(this, new VideoDownloadInfoArgs(video.Title, fileName, audioStreamInfo.Size, videoStreamInfo.Size));
 
             // download progress calculation
             double audioDownloadProgress = 0;
             double videoDownloadProgress = 0;
 
-            var totalFileSize = audioStreamInfo.ContentLength + videoStreamInfo.ContentLength;
-            var audioWeight = (double)Math.Round((100m / totalFileSize) * audioStreamInfo.ContentLength, 2);
-            var videoWeight = (double)Math.Round((100m / totalFileSize) * videoStreamInfo.ContentLength, 2);
+            var totalFileSize = audioStreamInfo.Size + videoStreamInfo.Size;
+            var audioWeight = (double)Math.Round((100m / totalFileSize) * audioStreamInfo.Size, 2);
+            var videoWeight = (double)Math.Round((100m / totalFileSize) * videoStreamInfo.Size, 2);
 
             var audioProgress = new Progress<double>(x =>
             {
