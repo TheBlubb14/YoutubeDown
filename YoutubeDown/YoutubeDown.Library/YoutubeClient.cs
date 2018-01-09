@@ -52,9 +52,10 @@ namespace YoutubeDown.Library
             videoId = videoId.NormalizeYoutubeVideoId();
 
             var video = await client.GetVideoAsync(videoId);
-            
+            var videoStreamInfos = await client.GetVideoMediaStreamInfosAsync(videoId);
+
             // get adaptive videostream with best videoquality
-            var videoStreamInfo = video.VideoStreamInfos
+            var videoStreamInfo = videoStreamInfos.Video
                 .OrderBy(x => x.VideoQuality)
                 .ThenBy(x => x.Bitrate)
                 .LastOrDefault();
@@ -64,14 +65,14 @@ namespace YoutubeDown.Library
             // get adaptive audiostream with highest bitrate
             if (videoStreamInfo.Container == Container.WebM)
             {
-                audioStreamInfo = video.AudioStreamInfos
+                audioStreamInfo = videoStreamInfos.Audio
                     .Where(x => x.AudioEncoding == AudioEncoding.Vorbis || x.AudioEncoding == AudioEncoding.Opus)
                     .OrderBy(x => x.Bitrate)
                     .LastOrDefault();
             }
             else
             {
-                audioStreamInfo = video.AudioStreamInfos
+                audioStreamInfo = videoStreamInfos.Audio
                     .Where(x => x.AudioEncoding == AudioEncoding.Aac)
                     .OrderBy(x => x.Bitrate)
                     .LastOrDefault();
