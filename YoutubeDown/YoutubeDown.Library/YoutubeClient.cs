@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -25,7 +26,7 @@ namespace YoutubeDown.Library
         public event EventHandler MuxingStarted;
         public event EventHandler MuxingFinished;
 
-        public YoutubeClient(string ffmpegPath, string downloadPath, Progress<double> progress, bool overwriteFiles, CancellationToken cancellationToken)
+        public YoutubeClient(string ffmpegPath, string downloadPath, bool overwriteFiles, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(ffmpegPath))
                 throw new ArgumentNullException(nameof(ffmpegPath));
@@ -35,7 +36,7 @@ namespace YoutubeDown.Library
 
             FFmpegPath = ffmpegPath;
             DownloadPath = downloadPath;
-            Progress = progress;
+
             OverwriteFiles = overwriteFiles;
             CancellationToken = cancellationToken;
 
@@ -47,8 +48,10 @@ namespace YoutubeDown.Library
         /// </summary>
         /// <param name="videoId">The video id</param>
         /// <returns></returns>
-        public async Task DownloadHighestVideo(string videoId)
+        public async Task DownloadHighestVideo(string videoId, Progress<double> progress)
         {
+            Progress = progress;
+
             videoId = videoId.NormalizeYoutubeVideoId();
 
             var video = await client.GetVideoAsync(videoId);
@@ -149,6 +152,20 @@ namespace YoutubeDown.Library
                 if (File.Exists(tmpVideoFileName))
                     File.Delete(tmpVideoFileName);
             }
+        }
+
+        public async Task<IEnumerable<Video>> GetVideosAsync(string url)
+        {
+            if (YoutubeExplode.YoutubeClient.TryParsePlaylistId(url, out string playlistId))
+                return (await client.GetPlaylistAsync(playlistId)).Videos;
+            else
+                if (YoutubeExplode.YoutubeClient.TryParseVideoId(url, out string videoId))
+                return new[] { await client.GetVideoAsync(videoId) };
+            else
+                if (YoutubeExplode.YoutubeClient.TryParseChannelId(url, out string channelId))
+                return await client.GetChannelUploadsAsync(channelId);
+            else
+                return Enumerable.Empty<Video>();
         }
     }
 }
