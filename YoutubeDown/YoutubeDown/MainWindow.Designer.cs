@@ -73,6 +73,7 @@
             this.textBoxVideoId.Name = "textBoxVideoId";
             this.textBoxVideoId.Size = new System.Drawing.Size(598, 26);
             this.textBoxVideoId.TabIndex = 0;
+            this.textBoxVideoId.Text = "https://www.youtube.com/playlist?list=PLrhzvIcii6GNjpARdnO4ueTUAVR9eMBpc";
             this.textBoxVideoId.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBoxVideoId_KeyPress);
             // 
             // statusStrip
@@ -271,7 +272,7 @@
             // button7
             // 
             this.button7.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.button7.Image = global::YoutubeDown.Properties.Resources.play;
+            this.button7.Image = global::YoutubeDown.Properties.Resources.download;
             this.button7.Location = new System.Drawing.Point(6, 19);
             this.button7.Name = "button7";
             this.button7.Size = new System.Drawing.Size(36, 36);
@@ -312,7 +313,7 @@
             // button3
             // 
             this.button3.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.button3.Image = global::YoutubeDown.Properties.Resources.play;
+            this.button3.Image = global::YoutubeDown.Properties.Resources.download;
             this.button3.Location = new System.Drawing.Point(6, 19);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(36, 36);

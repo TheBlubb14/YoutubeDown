@@ -10,6 +10,11 @@ namespace YoutubeDown
 {
     public static class Extensions
     {
+        public static int CompareTo(this Video x, Video y, Func<Video, IComparable> func)
+        {
+            return func.Invoke(x).CompareTo(func.Invoke(y));
+        }
+
         public static void Invoke(this Control control, MethodInvoker methodInvoker)
         {
             control.Invoke(methodInvoker);

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -19,14 +20,14 @@ namespace YoutubeDown
 
         private CancellationTokenSource cancellationTokenSource;
         private bool isRunning;
-        private Dictionary<int, (Func<Video, object> Property, SortMode SortMode, Func<Video, Video, int> SortFunctAsc, Func<Video, Video, int> SortFunctDesc)> GridDictionary;
+        private Dictionary<int, (Func<Video, IComparable> Property, SortMode SortMode)> GridDictionary;
 
 
         public MainWindow()
         {
             InitializeComponent();
             cancellationTokenSource = new CancellationTokenSource();
-            GridDictionary = new Dictionary<int, (Func<Video, object> Property, SortMode SortMode, Func<Video, Video, int> SortFunctAsc, Func<Video, Video, int> SortFunctDesc)>();
+            GridDictionary = new Dictionary<int, (Func<Video, IComparable> Property, SortMode SortMode)>();
         }
 
         private void MainWindow_Load(object sender, EventArgs e)
@@ -223,69 +224,38 @@ namespace YoutubeDown
             dataGridView1.Columns.Clear();
             dataGridView1.AutoGenerateColumns = false;
             dataGridView1.AllowUserToAddRows = false;
-            dataGridView1.Columns.Add(nameof(Video.Id), "Id");
-            dataGridView1.Columns.Add(nameof(Video.Author), "Author");
-            dataGridView1.Columns.Add(nameof(Video.Title), "Title");
-            dataGridView1.Columns.Add(nameof(Video.Description), "Description");
-            dataGridView1.Columns.Add(nameof(Statistics.ViewCount), "Views");
-            dataGridView1.Columns.Add(nameof(Statistics.LikeCount), "Likes");
-            dataGridView1.Columns.Add(nameof(Statistics.DislikeCount), "Dislikes");
-            dataGridView1.Columns.Add(nameof(Video.UploadDate), "Date");
-
-            dataGridView1.RowCount = Downloads.Count;
 
             GridDictionary.Clear();
-            GridDictionary.Add(0,
-                (x => x.Id, SortMode.None,
-                (x, y) => x.Id.CompareTo(y.Id),
-                (x, y) => y.Id.CompareTo(x.Id)));
 
-            GridDictionary.Add(1,
-                (x => x.Author, SortMode.None,
-                (x, y) => x.Author.CompareTo(y.Author),
-                (x, y) => y.Author.CompareTo(x.Author)));
+            AddColumn(nameof(Video.Id), "Id", x => x.Id);
+            AddColumn(nameof(Video.Author), "Author", x => x.Author);
+            AddColumn(nameof(Video.Title), "Title", x => x.Title);
+            AddColumn(nameof(Video.Description), "Description", x => x.Description);
+            AddColumn(nameof(Statistics.ViewCount), "Views", x => x.Statistics.ViewCount, useDecimalSeparator: true);
+            AddColumn(nameof(Statistics.LikeCount), "Likes", x => x.Statistics.LikeCount, useDecimalSeparator: true);
+            AddColumn(nameof(Statistics.DislikeCount), "Dislikes", x => x.Statistics.DislikeCount, useDecimalSeparator: true);
+            AddColumn(nameof(Video.UploadDate), "Date", x => x.UploadDate);
 
-            GridDictionary.Add(2,
-                (x => x.Title, SortMode.None,
-                (x, y) => x.Title.CompareTo(y.Title),
-                (x, y) => y.Title.CompareTo(x.Title)));
+            // Has to be set after adding the rows to the grid
+            // Otherwise there will be an empty column 
+            // https://msdn.microsoft.com/de-de/library/system.windows.forms.datagridview.rowcount(v=vs.110).aspx
+            // "... If you set the RowCount property to a value greater than 0 for a DataGridView control without columns, a DataGridViewTextBoxColumn is added automatically."
+            dataGridView1.RowCount = Downloads.Count;
+        }
 
-            GridDictionary.Add(3,
-                (x => x.Description, SortMode.None,
-                (x, y) => x.Description.CompareTo(y.Description),
-                (x, y) => y.Description.CompareTo(x.Description)));
+        private void AddColumn(string columnName, string title, Func<Video, IComparable> func, SortMode sortMode = SortMode.None, bool useDecimalSeparator = false)
+        {
+            dataGridView1.Columns.Add(columnName, title);
 
-            GridDictionary.Add(4,
-                (x => x.Statistics.ViewCount, SortMode.None,
-                (x, y) => x.Statistics.ViewCount.CompareTo(y.Statistics.ViewCount),
-                (x, y) => y.Statistics.ViewCount.CompareTo(x.Statistics.ViewCount)));
+            if (useDecimalSeparator)
+                dataGridView1.Columns[columnName].DefaultCellStyle.Format = "N0";
 
-            GridDictionary.Add(5,
-                (x => x.Statistics.LikeCount, SortMode.None,
-                (x, y) => x.Statistics.LikeCount.CompareTo(y.Statistics.LikeCount),
-                (x, y) => y.Statistics.LikeCount.CompareTo(x.Statistics.LikeCount)));
-
-            GridDictionary.Add(6,
-                (x => x.Statistics.DislikeCount, SortMode.None,
-                (x, y) => x.Statistics.DislikeCount.CompareTo(y.Statistics.DislikeCount),
-                (x, y) => y.Statistics.DislikeCount.CompareTo(x.Statistics.DislikeCount)));
-
-            GridDictionary.Add(7,
-                (x => x.UploadDate, SortMode.None,
-                (x, y) => x.UploadDate.CompareTo(y.UploadDate),
-                (x, y) => y.UploadDate.CompareTo(x.UploadDate)));
+            GridDictionary.Add(dataGridView1.Columns.Count - 1, (func, sortMode));
         }
 
         private void dataGridView1_CellValueNeeded(object sender, DataGridViewCellValueEventArgs e)
         {
             e.Value = GridDictionary[e.ColumnIndex].Property.Invoke(Downloads[e.RowIndex]);
-        }
-
-        public enum SortMode
-        {
-            None,
-            Ascending,
-            Descending
         }
 
         private void dataGridView1_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
@@ -296,13 +266,13 @@ namespace YoutubeDown
             {
                 case SortMode.None:
                 case SortMode.Descending:
-                    Downloads.Sort((x, y) => grid.SortFunctAsc(x, y));
-                    GridDictionary[e.ColumnIndex] = (grid.Property, SortMode.Ascending, grid.SortFunctAsc, grid.SortFunctDesc);
+                    Downloads.Sort((x, y) => x.CompareTo(y, grid.Property));
+                    GridDictionary[e.ColumnIndex] = (grid.Property, SortMode.Ascending);
                     break;
 
                 case SortMode.Ascending:
-                    Downloads.Sort((x, y) => grid.SortFunctDesc(x, y));
-                    GridDictionary[e.ColumnIndex] = (grid.Property, SortMode.Descending, grid.SortFunctAsc, grid.SortFunctDesc);
+                    Downloads.Sort((x, y) => y.CompareTo(x, grid.Property));
+                    GridDictionary[e.ColumnIndex] = (grid.Property, SortMode.Descending);
                     break;
             }
 
