@@ -18,15 +18,9 @@ namespace YoutubeDown.Library
 
         public string FFmpegPath { get; set; }
         public string DownloadPath { get; set; }
-        public IProgress<double> Progress { get; set; }
         public bool OverwriteFiles { get; set; }
-        public CancellationToken CancellationToken { get; set; }
 
-        public event EventHandler<VideoDownloadInfoArgs> VideoDownloadInfo;
-        public event EventHandler MuxingStarted;
-        public event EventHandler MuxingFinished;
-
-        public YoutubeClient(string ffmpegPath, string downloadPath, bool overwriteFiles, CancellationToken cancellationToken)
+        public YoutubeClient(string ffmpegPath, string downloadPath, bool overwriteFiles)
         {
             if (string.IsNullOrEmpty(ffmpegPath))
                 throw new ArgumentNullException(nameof(ffmpegPath));
@@ -38,8 +32,6 @@ namespace YoutubeDown.Library
             DownloadPath = downloadPath;
 
             OverwriteFiles = overwriteFiles;
-            CancellationToken = cancellationToken;
-
             client = new YoutubeExplode.YoutubeClient();
         }
 
@@ -47,15 +39,33 @@ namespace YoutubeDown.Library
         /// Downloads the best adaptive video from Youtube
         /// </summary>
         /// <param name="videoId">The video id</param>
-        /// <returns></returns>
-        public async Task DownloadHighestVideo(string videoId, Progress<double> progress)
+        /// <param name="progress">Downloadprogress in double from 0 to 1</param>
+        /// <param name="videoDownloadInfo">Infos about the current download</param>
+        /// <param name="muxingStarted">Invoked when muxing starts</param>
+        /// <param name="muxingFinished">Invoked when muxing finished</param>
+        /// <param name="cancellationToken">CancellationToken</param>
+        /// <returns></returns>   
+        public async Task DownloadHighestVideo(string videoId, IProgress<double> progress, EventHandler<VideoDownloadInfoArgs> videoDownloadInfo, EventHandler muxingStarted, EventHandler muxingFinished, CancellationToken cancellationToken)
         {
-            Progress = progress;
-
             videoId = videoId.NormalizeYoutubeVideoId();
-
             var video = await client.GetVideoAsync(videoId);
-            var videoStreamInfos = await client.GetVideoMediaStreamInfosAsync(videoId);
+
+            await DownloadHighestVideo(video, progress, videoDownloadInfo, muxingStarted, muxingFinished, cancellationToken);
+        }
+
+        /// <summary>
+        /// Downloads the best adaptive video from Youtube
+        /// </summary>
+        /// <param name="video">The Video to be downloaded</param>
+        /// <param name="progress">Downloadprogress in double from 0 to 1</param>
+        /// <param name="videoDownloadInfo">Infos about the current download</param>
+        /// <param name="muxingStarted">Invoked when muxing starts</param>
+        /// <param name="muxingFinished">Invoked when muxing finished</param>
+        /// <param name="cancellationToken">CancellationToken</param>
+        /// <returns></returns>        
+        public async Task DownloadHighestVideo(Video video, IProgress<double> progress, EventHandler<VideoDownloadInfoArgs> videoDownloadInfo, EventHandler muxingStarted, EventHandler muxingFinished, CancellationToken cancellationToken)
+        {
+            var videoStreamInfos = await client.GetVideoMediaStreamInfosAsync(video.Id);
 
             // get adaptive videostream with best videoquality
             var videoStreamInfo = videoStreamInfos.Video
@@ -89,7 +99,7 @@ namespace YoutubeDown.Library
             var fileExtension = videoStreamInfo.Container.GetFileExtension();
             var fileName = Path.Combine(DownloadPath, $"{video.Title}.{fileExtension}".GetValidFileName());
 
-            VideoDownloadInfo?.Invoke(this, new VideoDownloadInfoArgs(video.Title, fileName, audioStreamInfo.Size, videoStreamInfo.Size));
+            videoDownloadInfo?.Invoke(this, new VideoDownloadInfoArgs(video.Title, fileName, audioStreamInfo.Size, videoStreamInfo.Size));
 
             // download progress calculation
             double audioDownloadProgress = 0;
@@ -102,48 +112,30 @@ namespace YoutubeDown.Library
             var audioProgress = new Progress<double>(x =>
             {
                 audioDownloadProgress = (audioWeight * x);
-                Progress?.Report(audioDownloadProgress + videoDownloadProgress);
+                progress?.Report(audioDownloadProgress + videoDownloadProgress);
             });
 
             var videoProgress = new Progress<double>(x =>
             {
                 videoDownloadProgress = (videoWeight * x);
-                Progress?.Report(audioDownloadProgress + videoDownloadProgress);
+                progress?.Report(audioDownloadProgress + videoDownloadProgress);
             });
-
-            //var audioProgress = new Progress<DownloadProgress>(x =>
-            //{
-            //    audioDownloadProgress = (audioWeight * x.Percentage);
-            //    Debug.WriteLine("SPEED: " + x.Speed);
-            //    Progress?.Report(audioDownloadProgress + videoDownloadProgress);
-            //});
-
-            //var videoProgress = new Progress<DownloadProgress>(x =>
-            //{
-            //    videoDownloadProgress = (videoWeight * x.Percentage);
-            //    Debug.WriteLine("SPEED: " + x.Speed);
-            //    Progress?.Report(audioDownloadProgress + videoDownloadProgress);
-            //});
 
             try
             {
-                //var downloader = new MediaStreamDownloader();
-                //await downloader.DownloadMediaStream(client, audioStreamInfo, tmpAudioFileName, audioProgress, CancellationToken);
-                //await downloader.DownloadMediaStream(client, videoStreamInfo, tmpVideoFileName, videoProgress, CancellationToken);
-
                 // downloading adaptive streams
-                await client.DownloadMediaStreamAsync(audioStreamInfo, tmpAudioFileName, audioProgress, CancellationToken);
-                await client.DownloadMediaStreamAsync(videoStreamInfo, tmpVideoFileName, videoProgress, CancellationToken);
+                await client.DownloadMediaStreamAsync(audioStreamInfo, tmpAudioFileName, audioProgress, cancellationToken);
+                await client.DownloadMediaStreamAsync(videoStreamInfo, tmpVideoFileName, videoProgress, cancellationToken);
 
                 // muxing videofile with audiofile
-                MuxingStarted?.Invoke(this, EventArgs.Empty);
+                muxingStarted?.Invoke(this, EventArgs.Empty);
                 using (var muxer = new Muxer(OverwriteFiles, FFmpegPath))
                 {
                     // TODO: Log
                     muxer.DataReceived += (s, e) => { Debug.WriteLine(e.Data?.ToString()); };
                     muxer.Mux(tmpVideoFileName, tmpAudioFileName, fileName, LogLevel.error);
                 }
-                MuxingFinished?.Invoke(this, EventArgs.Empty);
+                muxingFinished?.Invoke(this, EventArgs.Empty);
             }
             finally
             {

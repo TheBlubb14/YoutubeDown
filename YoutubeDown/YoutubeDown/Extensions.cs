@@ -5,12 +5,13 @@ using System.ComponentModel;
 using System.Data;
 using System.Windows.Forms;
 using YoutubeExplode.Models;
+using YoutubeDown.Library.Download;
 
 namespace YoutubeDown
 {
     public static class Extensions
     {
-        public static int CompareTo(this Video x, Video y, Func<Video, IComparable> func)
+        public static int CompareTo(this VideoDownload x, VideoDownload y, Func<VideoDownload, IComparable> func)
         {
             return func.Invoke(x).CompareTo(func.Invoke(y));
         }

@@ -8,13 +8,16 @@ namespace YoutubeDown.Library.Download
 {
     public enum DownloadStatus
     {
+        None,
         Queued,
         Downloading,
         Finished,
         Canceled,
         Muxing,
+        MuxingError,
         VideoNotAvaible,
         VideoNotFound,
         HttpError,
+        Error,
     }
 }

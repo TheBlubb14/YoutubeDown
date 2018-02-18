@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Data;
 using System.Globalization;
 using System.IO;
@@ -9,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using YoutubeDown.Library;
+using YoutubeDown.Library.Download;
 using YoutubeExplode.Models;
 
 namespace YoutubeDown
@@ -17,17 +20,20 @@ namespace YoutubeDown
     {
         public Settings Settings { get; set; }
         public YoutubeClient YoutubeClient { get; set; }
+        public List<VideoDownload> Downloads { get; set; }
+
 
         private CancellationTokenSource cancellationTokenSource;
         private bool isRunning;
-        private Dictionary<int, (Func<Video, IComparable> Property, SortMode SortMode)> GridDictionary;
+        private Dictionary<int, (Func<VideoDownload, IComparable> Property, SortMode SortMode)> GridDictionary;
 
 
         public MainWindow()
         {
             InitializeComponent();
+            Downloads = new List<VideoDownload>();
             cancellationTokenSource = new CancellationTokenSource();
-            GridDictionary = new Dictionary<int, (Func<Video, IComparable> Property, SortMode SortMode)>();
+            GridDictionary = new Dictionary<int, (Func<VideoDownload, IComparable> Property, SortMode SortMode)>();
         }
 
         private void MainWindow_Load(object sender, EventArgs e)
@@ -51,7 +57,6 @@ namespace YoutubeDown
                 {
                     e.Cancel = true;
                 }
-
             }
         }
 
@@ -80,7 +85,7 @@ namespace YoutubeDown
         {
             try
             {
-                YoutubeClient = new YoutubeClient(Settings.FFmpegLocation, Settings.DownloadLocation, Settings.OverwriteFiles, cancellationTokenSource.Token);
+                YoutubeClient = new YoutubeClient(Settings.FFmpegLocation, Settings.DownloadLocation, Settings.OverwriteFiles);
             }
             catch (Exception ex)
             {
@@ -101,75 +106,75 @@ namespace YoutubeDown
 
         private void buttonDownload_Click(object sender, EventArgs e)
         {
-            Work();
+            //Work();
         }
 
-        private async void Work()
-        {
-            if (isRunning)
-            {
-                if (!cancellationTokenSource.IsCancellationRequested)
-                    if (MessageBox.Show("Do u want to cancel the download?", "", MessageBoxButtons.YesNo) == DialogResult.Yes)
-                        cancellationTokenSource.Cancel();
+        //private async void Work()
+        //{
+        //    if (isRunning)
+        //    {
+        //        if (!cancellationTokenSource.IsCancellationRequested)
+        //            if (MessageBox.Show("Do u want to cancel the download?", "", MessageBoxButtons.YesNo) == DialogResult.Yes)
+        //                cancellationTokenSource.Cancel();
 
-                return;
-            }
+        //        return;
+        //    }
 
-            if (string.IsNullOrEmpty(textBoxVideoId.Text))
-                return;
+        //    if (string.IsNullOrEmpty(textBoxVideoId.Text))
+        //        return;
 
-            if (!ValidateSettings())
-                return;
+        //    if (!ValidateSettings())
+        //        return;
 
-            buttonDownload.Text = "cancel";
+        //    buttonDownload.Text = "cancel";
 
-            var progress = new Progress<double>(x =>
-            {
-                if (this.IsDisposed)
-                    return;
+        //    var progress = new Progress<double>(x =>
+        //    {
+        //        if (this.IsDisposed)
+        //            return;
 
-                toolStripProgressBar.Value = (int)x;
-                toolStripStatusLabel.Text = $"downloading {x.ToString("00.00")}%";
-            });
+        //        toolStripProgressBar.Value = (int)x;
+        //        toolStripStatusLabel.Text = $"downloading {x.ToString("00.00")}%";
+        //    });
 
-            try
-            {
-                isRunning = true;
-                YoutubeClient = new YoutubeClient(Settings.FFmpegLocation, Settings.DownloadLocation, Settings.OverwriteFiles, cancellationTokenSource.Token);
-                YoutubeClient.VideoDownloadInfo += this.YoutubeClient_VideoDownloadInfo;
-                YoutubeClient.MuxingStarted += (s, e) => this.Invoke(() => toolStripStatusLabel.Text = "muxing started");
-                YoutubeClient.MuxingFinished += (s, e) => this.Invoke(() => toolStripStatusLabel.Text = "muxing finished");
+        //    try
+        //    {
+        //        isRunning = true;
+        //        YoutubeClient = new YoutubeClient(Settings.FFmpegLocation, Settings.DownloadLocation, Settings.OverwriteFiles, cancellationTokenSource.Token);
+        //        YoutubeClient.VideoDownloadInfo += this.YoutubeClient_VideoDownloadInfo;
+        //        YoutubeClient.MuxingStarted += (s, e) => this.Invoke(() => toolStripStatusLabel.Text = "muxing started");
+        //        YoutubeClient.MuxingFinished += (s, e) => this.Invoke(() => toolStripStatusLabel.Text = "muxing finished");
 
-                await YoutubeClient.DownloadHighestVideo(textBoxVideoId.Text, progress);
-            }
-            catch (ArgumentException ex) when (ex.ParamName == "videoId")
-            {
-                MessageBox.Show("Invalid video id");
-            }
-            catch (TaskCanceledException) when (cancellationTokenSource.IsCancellationRequested)
-            { }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "An error ocurred");
-            }
-            finally
-            {
-                isRunning = false;
-                YoutubeClient = null;
-                cancellationTokenSource = new CancellationTokenSource();
-                if (!this.IsDisposed)
-                {
-                    buttonDownload.Text = "download";
-                    toolStripProgressBar.Value = 0;
-                    toolStripStatusLabel.Text = "";
-                    labelVideoTitelValue.Text = "";
-                    labelAudioSizeValue.Text = "";
-                    labelVideoSizeValue.Text = "";
-                    labelTotalSizeValue.Text = "";
-                }
-            }
+        //        await YoutubeClient.DownloadHighestVideo(textBoxVideoId.Text, progress);
+        //    }
+        //    catch (ArgumentException ex) when (ex.ParamName == "videoId")
+        //    {
+        //        MessageBox.Show("Invalid video id");
+        //    }
+        //    catch (TaskCanceledException) when (cancellationTokenSource.IsCancellationRequested)
+        //    { }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show(ex.Message, "An error ocurred");
+        //    }
+        //    finally
+        //    {
+        //        isRunning = false;
+        //        YoutubeClient = null;
+        //        cancellationTokenSource = new CancellationTokenSource();
+        //        if (!this.IsDisposed)
+        //        {
+        //            buttonDownload.Text = "download";
+        //            toolStripProgressBar.Value = 0;
+        //            toolStripStatusLabel.Text = "";
+        //            labelVideoTitelValue.Text = "";
+        //            labelAudioSizeValue.Text = "";
+        //            labelVideoSizeValue.Text = "";
+        //            labelTotalSizeValue.Text = "";
+        //        }
+        //    }
 
-        }
+        //}
 
         private bool ValidateSettings()
         {
@@ -194,66 +199,94 @@ namespace YoutubeDown
             return true;
         }
 
-        private void YoutubeClient_VideoDownloadInfo(object sender, VideoDownloadInfoArgs e)
-        {
-            this.Invoke(() =>
-            {
-                toolTipTitle.SetToolTip(labelVideoTitelValue, e.Titel);
-                labelVideoTitelValue.Text = e.Titel;
-            });
-            this.Invoke(() => labelAudioSizeValue.Text = e.AudioSize.SizeLabel);
-            this.Invoke(() => labelVideoSizeValue.Text = e.VideoSize.SizeLabel);
-            this.Invoke(() => labelTotalSizeValue.Text = e.TotalSize.SizeLabel);
-        }
+        //private void YoutubeClient_VideoDownloadInfo(object sender, VideoDownloadInfoArgs e)
+        //{
+        //    this.Invoke(() =>
+        //    {
+        //        toolTipTitle.SetToolTip(labelVideoTitelValue, e.Titel);
+        //        labelVideoTitelValue.Text = e.Titel;
+        //    });
+        //    this.Invoke(() => labelAudioSizeValue.Text = e.AudioSize.SizeLabel);
+        //    this.Invoke(() => labelVideoSizeValue.Text = e.VideoSize.SizeLabel);
+        //    this.Invoke(() => labelTotalSizeValue.Text = e.TotalSize.SizeLabel);
+        //}
 
         private void buttonAddDownload_Click(object sender, EventArgs e)
         {
             AddDownload(textBoxVideoId.Text);
         }
 
-        public List<Video> Downloads { get; set; }
-
         private async void AddDownload(string url)
         {
-            Downloads = (await YoutubeClient.GetVideosAsync(url)).ToList();
+            //TODO: downloads getting not cleared if they get removed from the grid
             PrepareGrid();
-        }
 
-        private void PrepareGrid()
-        {
-            dataGridView1.Columns.Clear();
-            dataGridView1.AutoGenerateColumns = false;
-            dataGridView1.AllowUserToAddRows = false;
+            foreach (var video in await YoutubeClient.GetVideosAsync(url))
+            {
+                var videoDownload = new VideoDownload(video, YoutubeClient, CancellationTokenSource.CreateLinkedTokenSource(cancellationTokenSource.Token));
+                videoDownload.PropertyChanged += (s, e) =>
+                {
+                    var column = dataGrid.Columns[e.PropertyName];
 
-            GridDictionary.Clear();
+                    if (column == null)
+                        return;
 
-            AddColumn(nameof(Video.Id), "Id", x => x.Id);
-            AddColumn(nameof(Video.Author), "Author", x => x.Author);
-            AddColumn(nameof(Video.Title), "Title", x => x.Title);
-            AddColumn(nameof(Video.Description), "Description", x => x.Description);
-            AddColumn(nameof(Statistics.ViewCount), "Views", x => x.Statistics.ViewCount, useDecimalSeparator: true);
-            AddColumn(nameof(Statistics.LikeCount), "Likes", x => x.Statistics.LikeCount, useDecimalSeparator: true);
-            AddColumn(nameof(Statistics.DislikeCount), "Dislikes", x => x.Statistics.DislikeCount, useDecimalSeparator: true);
-            AddColumn(nameof(Video.UploadDate), "Date", x => x.UploadDate);
+                    var columnIndex = dataGrid.Columns.IndexOf(column);
+                    var rowIndex = Downloads.IndexOf(videoDownload);
+                    var cell = dataGrid[columnIndex, rowIndex];
+
+                    // CellValueNeeded will update the cell then
+                    if (!cell.Visible)
+                        return;
+
+                    dataGrid.InvalidateCell(cell);
+                };
+
+                Downloads.Add(videoDownload);
+            }
 
             // Has to be set after adding the rows to the grid
             // Otherwise there will be an empty column 
             // https://msdn.microsoft.com/de-de/library/system.windows.forms.datagridview.rowcount(v=vs.110).aspx
             // "... If you set the RowCount property to a value greater than 0 for a DataGridView control without columns, a DataGridViewTextBoxColumn is added automatically."
-            dataGridView1.RowCount = Downloads.Count;
+            dataGrid.RowCount = Downloads.Count;
         }
 
-        private void AddColumn(string columnName, string title, Func<Video, IComparable> func, SortMode sortMode = SortMode.None, bool useDecimalSeparator = false)
+        private void PrepareGrid()
         {
-            dataGridView1.Columns.Add(columnName, title);
+            dataGrid.Columns.Clear();
+            dataGrid.AutoGenerateColumns = false;
+            dataGrid.AllowUserToAddRows = false;
+            dataGrid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+
+            GridDictionary.Clear();
+
+            AddColumn(nameof(Video.Id), "Id", x => x.Video.Id);
+            AddColumn(nameof(Video.Author), "Author", x => x.Video.Author);
+            AddColumn(nameof(Video.Title), "Title", x => x.Video.Title);
+            AddColumn(nameof(Video.Description), "Description", x => x.Video.Description);
+            AddColumn(nameof(Statistics.ViewCount), "Views", x => x.Video.Statistics.ViewCount, useDecimalSeparator: true);
+            AddColumn(nameof(Statistics.LikeCount), "Likes", x => x.Video.Statistics.LikeCount, useDecimalSeparator: true);
+            AddColumn(nameof(Statistics.DislikeCount), "Dislikes", x => x.Video.Statistics.DislikeCount, useDecimalSeparator: true);
+            AddColumn(nameof(Video.UploadDate), "Date", x => x.Video.UploadDate);
+            AddColumn(nameof(VideoDownload.Status), "Status", x => x.Status);
+            AddColumn(nameof(VideoDownload.DownloadPercentage), "%", x => x.DownloadPercentage);
+            AddColumn(nameof(VideoDownload.AudioSize), "Audiosize", x => x.AudioSize?.SizeLabel);
+            AddColumn(nameof(VideoDownload.VideoSize), "Videosize", x => x.VideoSize?.SizeLabel);
+            AddColumn(nameof(VideoDownload.TotalSize), "Totalsize", x => x.TotalSize?.SizeLabel);
+        }
+
+        private void AddColumn(string propertyName, string title, Func<VideoDownload, IComparable> func, SortMode sortMode = SortMode.None, bool useDecimalSeparator = false)
+        {
+            dataGrid.Columns.Add(propertyName, title);
 
             if (useDecimalSeparator)
-                dataGridView1.Columns[columnName].DefaultCellStyle.Format = "N0";
+                dataGrid.Columns[propertyName].DefaultCellStyle.Format = "N0";
 
-            GridDictionary.Add(dataGridView1.Columns.Count - 1, (func, sortMode));
+            GridDictionary.Add(dataGrid.Columns.Count - 1, (func, sortMode));
         }
 
-        private void dataGridView1_CellValueNeeded(object sender, DataGridViewCellValueEventArgs e)
+        private void dataGrid_CellValueNeeded(object sender, DataGridViewCellValueEventArgs e)
         {
             e.Value = GridDictionary[e.ColumnIndex].Property.Invoke(Downloads[e.RowIndex]);
         }
@@ -276,7 +309,53 @@ namespace YoutubeDown
                     break;
             }
 
-            dataGridView1.Refresh();
+            dataGrid.Refresh();
+        }
+
+        private void buttonSelectedVideosDownload_Click(object sender, EventArgs e)
+        {
+            Work(GetSelectedVideos());
+        }
+
+        private async void Work(IEnumerable<VideoDownload> videoDownloads)
+        {
+            if (isRunning)
+                return;
+
+            isRunning = true;
+            //await Parallel.ForEach()
+            foreach (var video in videoDownloads)
+                await video.DownloadVideoAsync();
+
+            isRunning = false;
+        }
+
+        private IEnumerable<VideoDownload> GetSelectedVideos()
+        {
+            foreach (DataGridViewRow row in dataGrid.SelectedRows)
+            {
+                var videoId = row.Cells[nameof(Video.Id)].Value.ToString();
+                var video = Downloads.FirstOrDefault(x => x.Video.Id == videoId);
+
+                if (video == null)
+                    continue;
+
+                yield return video;
+            }
+        }
+
+        private IEnumerable<VideoDownload> GetAllVideos()
+        {
+            foreach (DataGridViewRow row in dataGrid.Rows)
+            {
+                var videoId = row.Cells[nameof(Video.Id)].Value.ToString();
+                var video = Downloads.FirstOrDefault(x => x.Video.Id == videoId);
+
+                if (video == null)
+                    continue;
+
+                yield return video;
+            }
         }
     }
 }

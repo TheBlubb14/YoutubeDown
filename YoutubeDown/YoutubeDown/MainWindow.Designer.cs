@@ -46,19 +46,19 @@
             this.labelTotalSizeValue = new System.Windows.Forms.Label();
             this.labelTotalSize = new System.Windows.Forms.Label();
             this.toolTipTitle = new System.Windows.Forms.ToolTip(this.components);
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.dataGrid = new System.Windows.Forms.DataGridView();
             this.buttonAddDownload = new System.Windows.Forms.Button();
             this.groupBoxAllVideos = new System.Windows.Forms.GroupBox();
-            this.button5 = new System.Windows.Forms.Button();
-            this.button7 = new System.Windows.Forms.Button();
-            this.button6 = new System.Windows.Forms.Button();
+            this.buttonAllVideosStop = new System.Windows.Forms.Button();
+            this.buttonAllVideosDownload = new System.Windows.Forms.Button();
+            this.buttonAllVideosPause = new System.Windows.Forms.Button();
             this.groupBoxSelected = new System.Windows.Forms.GroupBox();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
-            this.button4 = new System.Windows.Forms.Button();
+            this.button2SelectedVideosStop = new System.Windows.Forms.Button();
+            this.buttonSelectedVideosDownload = new System.Windows.Forms.Button();
+            this.buttonSelectedVideosPause = new System.Windows.Forms.Button();
             this.statusStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGrid)).BeginInit();
             this.groupBoxAllVideos.SuspendLayout();
             this.groupBoxSelected.SuspendLayout();
             this.SuspendLayout();
@@ -224,17 +224,17 @@
             this.labelTotalSize.Text = "Total Size";
             this.labelTotalSize.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // dataGridView1
+            // dataGrid
             // 
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.dataGridView1.Location = new System.Drawing.Point(0, 255);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(665, 391);
-            this.dataGridView1.TabIndex = 12;
-            this.dataGridView1.VirtualMode = true;
-            this.dataGridView1.CellValueNeeded += new System.Windows.Forms.DataGridViewCellValueEventHandler(this.dataGridView1_CellValueNeeded);
-            this.dataGridView1.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridView1_ColumnHeaderMouseClick);
+            this.dataGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGrid.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.dataGrid.Location = new System.Drawing.Point(0, 255);
+            this.dataGrid.Name = "dataGrid";
+            this.dataGrid.Size = new System.Drawing.Size(665, 391);
+            this.dataGrid.TabIndex = 12;
+            this.dataGrid.VirtualMode = true;
+            this.dataGrid.CellValueNeeded += new System.Windows.Forms.DataGridViewCellValueEventHandler(this.dataGrid_CellValueNeeded);
+            this.dataGrid.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridView1_ColumnHeaderMouseClick);
             // 
             // buttonAddDownload
             // 
@@ -250,9 +250,9 @@
             // groupBoxAllVideos
             // 
             this.groupBoxAllVideos.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBoxAllVideos.Controls.Add(this.button5);
-            this.groupBoxAllVideos.Controls.Add(this.button7);
-            this.groupBoxAllVideos.Controls.Add(this.button6);
+            this.groupBoxAllVideos.Controls.Add(this.buttonAllVideosStop);
+            this.groupBoxAllVideos.Controls.Add(this.buttonAllVideosDownload);
+            this.groupBoxAllVideos.Controls.Add(this.buttonAllVideosPause);
             this.groupBoxAllVideos.Location = new System.Drawing.Point(520, 143);
             this.groupBoxAllVideos.Name = "groupBoxAllVideos";
             this.groupBoxAllVideos.Size = new System.Drawing.Size(133, 64);
@@ -260,40 +260,40 @@
             this.groupBoxAllVideos.TabStop = false;
             this.groupBoxAllVideos.Text = "All Videos";
             // 
-            // button5
+            // buttonAllVideosStop
             // 
-            this.button5.Image = global::YoutubeDown.Properties.Resources.stop;
-            this.button5.Location = new System.Drawing.Point(90, 19);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(36, 36);
-            this.button5.TabIndex = 20;
-            this.button5.UseVisualStyleBackColor = true;
+            this.buttonAllVideosStop.Image = global::YoutubeDown.Properties.Resources.stop;
+            this.buttonAllVideosStop.Location = new System.Drawing.Point(90, 19);
+            this.buttonAllVideosStop.Name = "buttonAllVideosStop";
+            this.buttonAllVideosStop.Size = new System.Drawing.Size(36, 36);
+            this.buttonAllVideosStop.TabIndex = 20;
+            this.buttonAllVideosStop.UseVisualStyleBackColor = true;
             // 
-            // button7
+            // buttonAllVideosDownload
             // 
-            this.button7.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.button7.Image = global::YoutubeDown.Properties.Resources.download;
-            this.button7.Location = new System.Drawing.Point(6, 19);
-            this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(36, 36);
-            this.button7.TabIndex = 18;
-            this.button7.UseVisualStyleBackColor = true;
+            this.buttonAllVideosDownload.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.buttonAllVideosDownload.Image = global::YoutubeDown.Properties.Resources.download;
+            this.buttonAllVideosDownload.Location = new System.Drawing.Point(6, 19);
+            this.buttonAllVideosDownload.Name = "buttonAllVideosDownload";
+            this.buttonAllVideosDownload.Size = new System.Drawing.Size(36, 36);
+            this.buttonAllVideosDownload.TabIndex = 18;
+            this.buttonAllVideosDownload.UseVisualStyleBackColor = true;
             // 
-            // button6
+            // buttonAllVideosPause
             // 
-            this.button6.Image = global::YoutubeDown.Properties.Resources.pause;
-            this.button6.Location = new System.Drawing.Point(48, 19);
-            this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(36, 36);
-            this.button6.TabIndex = 19;
-            this.button6.UseVisualStyleBackColor = true;
+            this.buttonAllVideosPause.Image = global::YoutubeDown.Properties.Resources.pause;
+            this.buttonAllVideosPause.Location = new System.Drawing.Point(48, 19);
+            this.buttonAllVideosPause.Name = "buttonAllVideosPause";
+            this.buttonAllVideosPause.Size = new System.Drawing.Size(36, 36);
+            this.buttonAllVideosPause.TabIndex = 19;
+            this.buttonAllVideosPause.UseVisualStyleBackColor = true;
             // 
             // groupBoxSelected
             // 
             this.groupBoxSelected.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBoxSelected.Controls.Add(this.button2);
-            this.groupBoxSelected.Controls.Add(this.button3);
-            this.groupBoxSelected.Controls.Add(this.button4);
+            this.groupBoxSelected.Controls.Add(this.button2SelectedVideosStop);
+            this.groupBoxSelected.Controls.Add(this.buttonSelectedVideosDownload);
+            this.groupBoxSelected.Controls.Add(this.buttonSelectedVideosPause);
             this.groupBoxSelected.Location = new System.Drawing.Point(520, 73);
             this.groupBoxSelected.Name = "groupBoxSelected";
             this.groupBoxSelected.Size = new System.Drawing.Size(133, 64);
@@ -301,33 +301,34 @@
             this.groupBoxSelected.TabStop = false;
             this.groupBoxSelected.Text = "Selected Videos";
             // 
-            // button2
+            // button2SelectedVideosStop
             // 
-            this.button2.Image = global::YoutubeDown.Properties.Resources.stop;
-            this.button2.Location = new System.Drawing.Point(90, 19);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(36, 36);
-            this.button2.TabIndex = 20;
-            this.button2.UseVisualStyleBackColor = true;
+            this.button2SelectedVideosStop.Image = global::YoutubeDown.Properties.Resources.stop;
+            this.button2SelectedVideosStop.Location = new System.Drawing.Point(90, 19);
+            this.button2SelectedVideosStop.Name = "button2SelectedVideosStop";
+            this.button2SelectedVideosStop.Size = new System.Drawing.Size(36, 36);
+            this.button2SelectedVideosStop.TabIndex = 20;
+            this.button2SelectedVideosStop.UseVisualStyleBackColor = true;
             // 
-            // button3
+            // buttonSelectedVideosDownload
             // 
-            this.button3.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.button3.Image = global::YoutubeDown.Properties.Resources.download;
-            this.button3.Location = new System.Drawing.Point(6, 19);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(36, 36);
-            this.button3.TabIndex = 18;
-            this.button3.UseVisualStyleBackColor = true;
+            this.buttonSelectedVideosDownload.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.buttonSelectedVideosDownload.Image = global::YoutubeDown.Properties.Resources.download;
+            this.buttonSelectedVideosDownload.Location = new System.Drawing.Point(6, 19);
+            this.buttonSelectedVideosDownload.Name = "buttonSelectedVideosDownload";
+            this.buttonSelectedVideosDownload.Size = new System.Drawing.Size(36, 36);
+            this.buttonSelectedVideosDownload.TabIndex = 18;
+            this.buttonSelectedVideosDownload.UseVisualStyleBackColor = true;
+            this.buttonSelectedVideosDownload.Click += new System.EventHandler(this.buttonSelectedVideosDownload_Click);
             // 
-            // button4
+            // buttonSelectedVideosPause
             // 
-            this.button4.Image = global::YoutubeDown.Properties.Resources.pause;
-            this.button4.Location = new System.Drawing.Point(48, 19);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(36, 36);
-            this.button4.TabIndex = 19;
-            this.button4.UseVisualStyleBackColor = true;
+            this.buttonSelectedVideosPause.Image = global::YoutubeDown.Properties.Resources.pause;
+            this.buttonSelectedVideosPause.Location = new System.Drawing.Point(48, 19);
+            this.buttonSelectedVideosPause.Name = "buttonSelectedVideosPause";
+            this.buttonSelectedVideosPause.Size = new System.Drawing.Size(36, 36);
+            this.buttonSelectedVideosPause.TabIndex = 19;
+            this.buttonSelectedVideosPause.UseVisualStyleBackColor = true;
             // 
             // MainWindow
             // 
@@ -337,7 +338,7 @@
             this.Controls.Add(this.groupBoxSelected);
             this.Controls.Add(this.groupBoxAllVideos);
             this.Controls.Add(this.buttonAddDownload);
-            this.Controls.Add(this.dataGridView1);
+            this.Controls.Add(this.dataGrid);
             this.Controls.Add(this.labelTotalSizeValue);
             this.Controls.Add(this.labelTotalSize);
             this.Controls.Add(this.labelVideoSizeValue);
@@ -361,7 +362,7 @@
             this.statusStrip.PerformLayout();
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGrid)).EndInit();
             this.groupBoxAllVideos.ResumeLayout(false);
             this.groupBoxSelected.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -388,16 +389,16 @@
         private System.Windows.Forms.Label labelTotalSizeValue;
         private System.Windows.Forms.Label labelTotalSize;
         private System.Windows.Forms.ToolTip toolTipTitle;
-        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.DataGridView dataGrid;
         private System.Windows.Forms.Button buttonAddDownload;
         private System.Windows.Forms.GroupBox groupBoxAllVideos;
-        private System.Windows.Forms.Button button5;
-        private System.Windows.Forms.Button button7;
-        private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.Button buttonAllVideosStop;
+        private System.Windows.Forms.Button buttonAllVideosDownload;
+        private System.Windows.Forms.Button buttonAllVideosPause;
         private System.Windows.Forms.GroupBox groupBoxSelected;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button button2SelectedVideosStop;
+        private System.Windows.Forms.Button buttonSelectedVideosDownload;
+        private System.Windows.Forms.Button buttonSelectedVideosPause;
     }
 }
 
