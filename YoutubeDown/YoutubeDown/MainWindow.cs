@@ -13,6 +13,7 @@ using System.Windows.Forms;
 using YoutubeDown.Library;
 using YoutubeDown.Library.Download;
 using YoutubeExplode.Models;
+using System.Collections.Async;
 
 namespace YoutubeDown
 {
@@ -21,7 +22,6 @@ namespace YoutubeDown
         public Settings Settings { get; set; }
         public YoutubeClient YoutubeClient { get; set; }
         public List<VideoDownload> Downloads { get; set; }
-
 
         private CancellationTokenSource cancellationTokenSource;
         private bool isRunning;
@@ -40,6 +40,7 @@ namespace YoutubeDown
         {
             LoadSettings();
             LoadYoutubeClient();
+            PrepareGrid();
         }
 
         private async void MainWindow_FormClosing(object sender, FormClosingEventArgs e)
@@ -102,6 +103,7 @@ namespace YoutubeDown
             e.Handled = true;
 
             AddDownload(textBoxVideoId.Text);
+            textBoxVideoId.Clear();
         }
 
         private void buttonDownload_Click(object sender, EventArgs e)
@@ -196,6 +198,12 @@ namespace YoutubeDown
                 return false;
             }
 
+            if (Settings.MaxDegreeOfParalellism < 1)
+            {
+                MessageBox.Show("invalid MaxDegreeOfParalellism setting");
+                return false;
+            }
+
             return true;
         }
 
@@ -214,13 +222,11 @@ namespace YoutubeDown
         private void buttonAddDownload_Click(object sender, EventArgs e)
         {
             AddDownload(textBoxVideoId.Text);
+            textBoxVideoId.Clear();
         }
 
         private async void AddDownload(string url)
         {
-            //TODO: downloads getting not cleared if they get removed from the grid
-            PrepareGrid();
-
             foreach (var video in await YoutubeClient.GetVideosAsync(url))
             {
                 var videoDownload = new VideoDownload(video, YoutubeClient, CancellationTokenSource.CreateLinkedTokenSource(cancellationTokenSource.Token));
@@ -323,9 +329,13 @@ namespace YoutubeDown
                 return;
 
             isRunning = true;
-            //await Parallel.ForEach()
-            foreach (var video in videoDownloads)
-                await video.DownloadVideoAsync();
+
+            await videoDownloads.ParallelForEachAsync(async video =>
+            {
+                await video.DownloadAsync();
+            },
+            maxDegreeOfParalellism: Settings.MaxDegreeOfParalellism,
+            cancellationToken: cancellationTokenSource.Token);
 
             isRunning = false;
         }
@@ -355,6 +365,38 @@ namespace YoutubeDown
                     continue;
 
                 yield return video;
+            }
+        }
+
+        private void dataGrid_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
+        {
+            var download = Downloads[e.RowIndex];
+
+            if (download.Status == DownloadStatus.Downloading || download.Status == DownloadStatus.Muxing)
+            {
+                // TODO: ask to cancel the download
+            }
+
+            Downloads.Remove(download);
+        }
+
+        private void checkBoxClipboard_CheckedChanged(object sender, EventArgs e)
+        {
+            timerClipboard.Enabled = checkBoxClipboard.Checked;
+        }
+
+        private string lastUrl = "";
+        private void timerClipboard_Tick(object sender, EventArgs e)
+        {
+            var text = Clipboard.GetText();
+
+            if (!text.StartsWith("https://www.youtube.com"))
+                return;
+
+            if (lastUrl != text)
+            {
+                AddDownload(text);
+                lastUrl = Clipboard.GetText();
             }
         }
     }

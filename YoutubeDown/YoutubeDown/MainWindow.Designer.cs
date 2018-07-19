@@ -56,6 +56,8 @@
             this.button2SelectedVideosStop = new System.Windows.Forms.Button();
             this.buttonSelectedVideosDownload = new System.Windows.Forms.Button();
             this.buttonSelectedVideosPause = new System.Windows.Forms.Button();
+            this.checkBoxClipboard = new System.Windows.Forms.CheckBox();
+            this.timerClipboard = new System.Windows.Forms.Timer(this.components);
             this.statusStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGrid)).BeginInit();
@@ -235,6 +237,7 @@
             this.dataGrid.VirtualMode = true;
             this.dataGrid.CellValueNeeded += new System.Windows.Forms.DataGridViewCellValueEventHandler(this.dataGrid_CellValueNeeded);
             this.dataGrid.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridView1_ColumnHeaderMouseClick);
+            this.dataGrid.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.dataGrid_RowsRemoved);
             // 
             // buttonAddDownload
             // 
@@ -330,11 +333,27 @@
             this.buttonSelectedVideosPause.TabIndex = 19;
             this.buttonSelectedVideosPause.UseVisualStyleBackColor = true;
             // 
+            // checkBoxClipboard
+            // 
+            this.checkBoxClipboard.AutoSize = true;
+            this.checkBoxClipboard.Location = new System.Drawing.Point(156, 171);
+            this.checkBoxClipboard.Name = "checkBoxClipboard";
+            this.checkBoxClipboard.Size = new System.Drawing.Size(69, 17);
+            this.checkBoxClipboard.TabIndex = 22;
+            this.checkBoxClipboard.Text = "clipboard";
+            this.checkBoxClipboard.UseVisualStyleBackColor = true;
+            this.checkBoxClipboard.CheckedChanged += new System.EventHandler(this.checkBoxClipboard_CheckedChanged);
+            // 
+            // timerClipboard
+            // 
+            this.timerClipboard.Tick += new System.EventHandler(this.timerClipboard_Tick);
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(665, 668);
+            this.Controls.Add(this.checkBoxClipboard);
             this.Controls.Add(this.groupBoxSelected);
             this.Controls.Add(this.groupBoxAllVideos);
             this.Controls.Add(this.buttonAddDownload);
@@ -399,6 +418,8 @@
         private System.Windows.Forms.Button button2SelectedVideosStop;
         private System.Windows.Forms.Button buttonSelectedVideosDownload;
         private System.Windows.Forms.Button buttonSelectedVideosPause;
+        private System.Windows.Forms.CheckBox checkBoxClipboard;
+        private System.Windows.Forms.Timer timerClipboard;
     }
 }
 

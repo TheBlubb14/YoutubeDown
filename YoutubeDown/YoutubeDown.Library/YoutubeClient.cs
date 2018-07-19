@@ -1,10 +1,12 @@
-﻿using System;
+﻿using NAudio.Wave;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using YoutubeDown.Library.Download.EventArg;
 using YoutubeDown.Library.Downloader;
 using YoutubeDown.Library.ffmpeg;
 using YoutubeExplode.Models;
@@ -47,6 +49,9 @@ namespace YoutubeDown.Library
         /// <returns></returns>   
         public async Task DownloadHighestVideo(string videoId, IProgress<double> progress, EventHandler<VideoDownloadInfoArgs> videoDownloadInfo, EventHandler muxingStarted, EventHandler muxingFinished, CancellationToken cancellationToken)
         {
+            if (string.IsNullOrEmpty(videoId))
+                return;
+
             videoId = videoId.NormalizeYoutubeVideoId();
             var video = await client.GetVideoAsync(videoId);
 
@@ -143,6 +148,99 @@ namespace YoutubeDown.Library
                     File.Delete(tmpAudioFileName);
                 if (File.Exists(tmpVideoFileName))
                     File.Delete(tmpVideoFileName);
+            }
+        }
+
+        /// <summary>
+        /// Downloads the beste audio as MP3 from the given Youtube video
+        /// </summary>
+        /// <param name="videoId">The video from which you want to download the audio</param>
+        /// <param name="progress">Downloadprogress in double from 0 to 1</param>
+        /// <param name="audioDownloadInfo">Infos about the current download</param>
+        /// <param name="muxingStarted">Invoked when muxing starts</param>
+        /// <param name="muxingFinished">Invoked when muxing finished</param>
+        /// <param name="cancellationToken">CancellationToken</param>
+        /// <returns></returns>
+        public async Task DownloadAsMP3(string videoId, IProgress<double> progress, EventHandler<AudioDownloadInfoArgs> audioDownloadInfo, EventHandler muxingStarted, EventHandler muxingFinished, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrEmpty(videoId))
+                return;
+
+            videoId = videoId.NormalizeYoutubeVideoId();
+            var video = await client.GetVideoAsync(videoId);
+
+            await DownloadAsMP3(video, progress, audioDownloadInfo, muxingStarted, muxingFinished, cancellationToken);
+        }
+
+        /// <summary>
+        /// Downloads the beste audio as MP3 from the given Youtube video
+        /// </summary>
+        /// <param name="video">The video id</param>
+        /// <param name="progress">Downloadprogress in double from 0 to 1</param>
+        /// <param name="audioDownloadInfo">Infos about the current download</param>
+        /// <param name="muxingStarted">Invoked when muxing starts</param>
+        /// <param name="muxingFinished">Invoked when muxing finished</param>
+        /// <param name="cancellationToken">CancellationToken</param>
+        /// <returns></returns>
+        public async Task DownloadAsMP3(Video video, IProgress<double> progress, EventHandler<AudioDownloadInfoArgs> audioDownloadInfo, EventHandler muxingStarted, EventHandler muxingFinished, CancellationToken cancellationToken)
+        {
+            var videoStreamInfos = await client.GetVideoMediaStreamInfosAsync(video.Id);
+
+            var audioStreamInfo = videoStreamInfos.Audio
+                .Where(x => x.AudioEncoding == AudioEncoding.Aac || x.AudioEncoding == AudioEncoding.Mp3)
+                .OrderBy(x => x.Bitrate)
+                .LastOrDefault();
+
+            var tmpAudioFileName = Path.Combine(DownloadPath, $"{video.Title}__mp3".GetValidFileName());
+            var fileName = Path.Combine(DownloadPath, $"{video.Title}.mp3".GetValidFileName());
+
+            if (File.Exists(fileName))
+            {
+                // delete file if already exists, otherwise File.Move throws an exception
+                if (OverwriteFiles)
+                    File.Delete(fileName);
+                else
+                    return;
+            }
+
+            audioDownloadInfo?.Invoke(this, new AudioDownloadInfoArgs(video.Title, fileName, audioStreamInfo.Size));
+
+            // download progress calculation
+            double audioDownloadProgress = 0;
+
+            var totalFileSize = audioStreamInfo.Size;
+            var audioWeight = 1;
+
+            var audioProgress = new Progress<double>(x =>
+            {
+                audioDownloadProgress = (audioWeight * x);
+                progress?.Report(audioDownloadProgress);
+            });
+
+            try
+            {
+                // downloading audio stream
+                await client.DownloadMediaStreamAsync(audioStreamInfo, tmpAudioFileName, audioProgress, cancellationToken);
+
+                muxingStarted?.Invoke(this, EventArgs.Empty);
+
+                if (audioStreamInfo.AudioEncoding == AudioEncoding.Mp3)
+                {
+                    File.Move(tmpAudioFileName, fileName);
+                }
+                else
+                {
+                    // convert audio to MP3
+                    using (var reader = new MediaFoundationReader(tmpAudioFileName))
+                        MediaFoundationEncoder.EncodeToMp3(reader, fileName);
+                }
+
+                muxingFinished?.Invoke(this, EventArgs.Empty);
+            }
+            finally
+            {
+                if (File.Exists(tmpAudioFileName))
+                    File.Delete(tmpAudioFileName);
             }
         }
 
