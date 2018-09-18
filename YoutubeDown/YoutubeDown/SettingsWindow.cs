@@ -21,6 +21,7 @@ namespace YoutubeDown
             textBoxFFmpegLocation.Text = Settings.FFmpegLocation;
             textBoxDownloadLocation.Text = Settings.DownloadLocation;
             checkBoxOverwriteFiles.Checked = Settings.OverwriteFiles;
+            numericUpDownMaxDegreeOfParalellism.Value = Settings.MaxDegreeOfParalellism;
         }
 
         private void buttonFFmpegLocation_Click(object sender, EventArgs e)
@@ -55,7 +56,8 @@ namespace YoutubeDown
             {
                 FFmpegLocation = textBoxFFmpegLocation.Text,
                 DownloadLocation = textBoxDownloadLocation.Text,
-                OverwriteFiles = checkBoxOverwriteFiles.Checked
+                OverwriteFiles = checkBoxOverwriteFiles.Checked,
+                MaxDegreeOfParalellism = Convert.ToInt32(numericUpDownMaxDegreeOfParalellism.Value)
             };
 
             // settings changed?
