@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Net.Http;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,7 +11,7 @@ using YoutubeExplode.Models;
 
 namespace YoutubeDown.Library.Download
 {
-    public class VideoDownload : PropertyChangedBase, IDownload
+    public class AudioDownload : PropertyChangedBase, IDownload
     {
         public Video Video { get; private set; }
 
@@ -59,7 +57,7 @@ namespace YoutubeDown.Library.Download
         private double downloadPercentage;
         private CancellationTokenSource cancellationTokenSource;
 
-        public VideoDownload(Video Video, YoutubeClient youtubeClient, CancellationTokenSource CancellationTokenSource)
+        public AudioDownload(Video Video, YoutubeClient youtubeClient, CancellationTokenSource CancellationTokenSource)
         {
             this.Video = Video;
             this.YoutubeClient = youtubeClient;
@@ -73,7 +71,7 @@ namespace YoutubeDown.Library.Download
             try
             {
                 this.Status = DownloadStatus.Downloading;
-                await YoutubeClient.DownloadHighestVideo(Video, progress, DownloadInfo, MuxingStarted, MuxingFinished, CancellationToken);
+                //await YoutubeClient.DownloadHighestVideo(Audio, progress, DownloadInfo, MuxingStarted, MuxingFinished, CancellationToken);
             }
             catch (TaskCanceledException)
             {
@@ -98,10 +96,9 @@ namespace YoutubeDown.Library.Download
             }
         }
 
-        private void DownloadInfo(object sender, VideoDownloadInfoArgs args)
+        private void DownloadInfo(object sender, AudioDownloadInfoArgs args)
         {
             AudioSize = args.AudioSize;
-            VideoSize = args.VideoSize;
             TotalSize = args.TotalSize;
         }
 

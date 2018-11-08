@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace YoutubeDown.Library
+namespace YoutubeDown.Library.Download.EventArg
 {
-    public class VideoDownloadInfoArgs : EventArgs
+    public class VideoDownloadInfoArgs : EventArgs, IDownloadInfoArgs
     {
         public string Titel { get; set; }
         public string FullFileName { get; set; }

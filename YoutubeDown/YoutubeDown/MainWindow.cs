@@ -332,7 +332,7 @@ namespace YoutubeDown
 
             await videoDownloads.ParallelForEachAsync(async video =>
             {
-                await video.DownloadVideoAsync();
+                await video.DownloadAsync();
             },
             maxDegreeOfParalellism: Settings.MaxDegreeOfParalellism,
             cancellationToken: cancellationTokenSource.Token);
