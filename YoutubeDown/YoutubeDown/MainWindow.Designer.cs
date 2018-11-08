@@ -34,17 +34,8 @@
             this.toolStripProgressBar = new System.Windows.Forms.ToolStripProgressBar();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.labelVideoId = new System.Windows.Forms.Label();
-            this.buttonDownload = new System.Windows.Forms.Button();
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.labelVideoTitel = new System.Windows.Forms.Label();
-            this.labelVideoTitelValue = new System.Windows.Forms.Label();
-            this.labelAudioSizeValue = new System.Windows.Forms.Label();
-            this.labelAudioSize = new System.Windows.Forms.Label();
-            this.labelVideoSizeValue = new System.Windows.Forms.Label();
-            this.labelVideoSize = new System.Windows.Forms.Label();
-            this.labelTotalSizeValue = new System.Windows.Forms.Label();
-            this.labelTotalSize = new System.Windows.Forms.Label();
             this.toolTipTitle = new System.Windows.Forms.ToolTip(this.components);
             this.dataGrid = new System.Windows.Forms.DataGridView();
             this.buttonAddDownload = new System.Windows.Forms.Button();
@@ -112,19 +103,6 @@
             this.labelVideoId.Text = "Video Id/Url";
             this.labelVideoId.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // buttonDownload
-            // 
-            this.buttonDownload.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonDownload.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.buttonDownload.Location = new System.Drawing.Point(389, 143);
-            this.buttonDownload.Margin = new System.Windows.Forms.Padding(2);
-            this.buttonDownload.Name = "buttonDownload";
-            this.buttonDownload.Size = new System.Drawing.Size(132, 64);
-            this.buttonDownload.TabIndex = 1;
-            this.buttonDownload.Text = "download";
-            this.buttonDownload.UseVisualStyleBackColor = true;
-            this.buttonDownload.Click += new System.EventHandler(this.buttonDownload_Click);
-            // 
             // menuStrip
             // 
             this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -141,90 +119,6 @@
             this.settingsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.settingsToolStripMenuItem.Text = "Settings";
             this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
-            // 
-            // labelVideoTitel
-            // 
-            this.labelVideoTitel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelVideoTitel.Location = new System.Drawing.Point(11, 24);
-            this.labelVideoTitel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.labelVideoTitel.Name = "labelVideoTitel";
-            this.labelVideoTitel.Size = new System.Drawing.Size(224, 26);
-            this.labelVideoTitel.TabIndex = 4;
-            this.labelVideoTitel.Text = "Titel";
-            this.labelVideoTitel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // labelVideoTitelValue
-            // 
-            this.labelVideoTitelValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelVideoTitelValue.Location = new System.Drawing.Point(11, 50);
-            this.labelVideoTitelValue.Margin = new System.Windows.Forms.Padding(2, 0, 2, 2);
-            this.labelVideoTitelValue.Name = "labelVideoTitelValue";
-            this.labelVideoTitelValue.Size = new System.Drawing.Size(224, 26);
-            this.labelVideoTitelValue.TabIndex = 5;
-            this.labelVideoTitelValue.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // labelAudioSizeValue
-            // 
-            this.labelAudioSizeValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelAudioSizeValue.Location = new System.Drawing.Point(11, 104);
-            this.labelAudioSizeValue.Margin = new System.Windows.Forms.Padding(2, 0, 2, 2);
-            this.labelAudioSizeValue.Name = "labelAudioSizeValue";
-            this.labelAudioSizeValue.Size = new System.Drawing.Size(224, 26);
-            this.labelAudioSizeValue.TabIndex = 7;
-            this.labelAudioSizeValue.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // labelAudioSize
-            // 
-            this.labelAudioSize.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelAudioSize.Location = new System.Drawing.Point(11, 78);
-            this.labelAudioSize.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.labelAudioSize.Name = "labelAudioSize";
-            this.labelAudioSize.Size = new System.Drawing.Size(224, 26);
-            this.labelAudioSize.TabIndex = 6;
-            this.labelAudioSize.Text = "Audio Size";
-            this.labelAudioSize.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // labelVideoSizeValue
-            // 
-            this.labelVideoSizeValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelVideoSizeValue.Location = new System.Drawing.Point(173, 50);
-            this.labelVideoSizeValue.Margin = new System.Windows.Forms.Padding(2, 0, 2, 2);
-            this.labelVideoSizeValue.Name = "labelVideoSizeValue";
-            this.labelVideoSizeValue.Size = new System.Drawing.Size(224, 26);
-            this.labelVideoSizeValue.TabIndex = 9;
-            this.labelVideoSizeValue.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // labelVideoSize
-            // 
-            this.labelVideoSize.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelVideoSize.Location = new System.Drawing.Point(173, 24);
-            this.labelVideoSize.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.labelVideoSize.Name = "labelVideoSize";
-            this.labelVideoSize.Size = new System.Drawing.Size(224, 26);
-            this.labelVideoSize.TabIndex = 8;
-            this.labelVideoSize.Text = "Video Size";
-            this.labelVideoSize.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // labelTotalSizeValue
-            // 
-            this.labelTotalSizeValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelTotalSizeValue.Location = new System.Drawing.Point(173, 104);
-            this.labelTotalSizeValue.Margin = new System.Windows.Forms.Padding(2, 0, 2, 2);
-            this.labelTotalSizeValue.Name = "labelTotalSizeValue";
-            this.labelTotalSizeValue.Size = new System.Drawing.Size(224, 26);
-            this.labelTotalSizeValue.TabIndex = 11;
-            this.labelTotalSizeValue.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // labelTotalSize
-            // 
-            this.labelTotalSize.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelTotalSize.Location = new System.Drawing.Point(173, 78);
-            this.labelTotalSize.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.labelTotalSize.Name = "labelTotalSize";
-            this.labelTotalSize.Size = new System.Drawing.Size(224, 26);
-            this.labelTotalSize.TabIndex = 10;
-            this.labelTotalSize.Text = "Total Size";
-            this.labelTotalSize.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // dataGrid
             // 
@@ -312,6 +206,7 @@
             this.button2SelectedVideosStop.Size = new System.Drawing.Size(36, 36);
             this.button2SelectedVideosStop.TabIndex = 20;
             this.button2SelectedVideosStop.UseVisualStyleBackColor = true;
+            this.button2SelectedVideosStop.Click += new System.EventHandler(this.button2SelectedVideosStop_Click);
             // 
             // buttonSelectedVideosDownload
             // 
@@ -336,7 +231,7 @@
             // checkBoxClipboard
             // 
             this.checkBoxClipboard.AutoSize = true;
-            this.checkBoxClipboard.Location = new System.Drawing.Point(156, 171);
+            this.checkBoxClipboard.Location = new System.Drawing.Point(434, 181);
             this.checkBoxClipboard.Name = "checkBoxClipboard";
             this.checkBoxClipboard.Size = new System.Drawing.Size(69, 17);
             this.checkBoxClipboard.TabIndex = 22;
@@ -358,17 +253,8 @@
             this.Controls.Add(this.groupBoxAllVideos);
             this.Controls.Add(this.buttonAddDownload);
             this.Controls.Add(this.dataGrid);
-            this.Controls.Add(this.labelTotalSizeValue);
-            this.Controls.Add(this.labelTotalSize);
-            this.Controls.Add(this.labelVideoSizeValue);
-            this.Controls.Add(this.labelVideoSize);
-            this.Controls.Add(this.labelAudioSizeValue);
-            this.Controls.Add(this.labelAudioSize);
-            this.Controls.Add(this.labelVideoTitelValue);
-            this.Controls.Add(this.labelVideoTitel);
             this.Controls.Add(this.labelVideoId);
             this.Controls.Add(this.textBoxVideoId);
-            this.Controls.Add(this.buttonDownload);
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.menuStrip);
             this.MainMenuStrip = this.menuStrip;
@@ -396,17 +282,8 @@
         private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel;
         private System.Windows.Forms.Label labelVideoId;
-        private System.Windows.Forms.Button buttonDownload;
         private System.Windows.Forms.MenuStrip menuStrip;
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
-        private System.Windows.Forms.Label labelVideoTitel;
-        private System.Windows.Forms.Label labelVideoTitelValue;
-        private System.Windows.Forms.Label labelAudioSizeValue;
-        private System.Windows.Forms.Label labelAudioSize;
-        private System.Windows.Forms.Label labelVideoSizeValue;
-        private System.Windows.Forms.Label labelVideoSize;
-        private System.Windows.Forms.Label labelTotalSizeValue;
-        private System.Windows.Forms.Label labelTotalSize;
         private System.Windows.Forms.ToolTip toolTipTitle;
         private System.Windows.Forms.DataGridView dataGrid;
         private System.Windows.Forms.Button buttonAddDownload;

@@ -399,5 +399,10 @@ namespace YoutubeDown
                 lastUrl = Clipboard.GetText();
             }
         }
+
+        private void button2SelectedVideosStop_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
